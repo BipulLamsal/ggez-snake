@@ -3,11 +3,10 @@ use core::f32;
 use backgroundgrid::BackgroundgGrid;
 use food::Food;
 use ggez::conf::{WindowMode, WindowSetup};
-use ggez::event::{self, EventHandler};
-use ggez::graphics::{self, Canvas, Color, DrawMode, FillOptions};
+use ggez::event::{self};
+use ggez::graphics::{self, Color};
 use ggez::input::keyboard::{self, KeyInput};
-use ggez::{input, Context, GameResult};
-use rand::Rng;
+use ggez::{Context, GameResult};
 use snake::Snake;
 
 pub const DIMENSION_SIZE: (i32, i32) = (20, 20);
@@ -20,7 +19,7 @@ mod backgroundgrid;
 mod food;
 mod grid;
 mod snake;
-
+#[derive(PartialEq, Eq, Clone, Debug)]
 enum Direction {
     UP,
     DOWN,
@@ -28,21 +27,38 @@ enum Direction {
     RIGHT,
     NONE,
 }
-
+impl Direction {
+    fn reverse(&self) -> Direction {
+        match self {
+            Direction::UP => Direction::DOWN,
+            Direction::DOWN => Direction::UP,
+            Direction::RIGHT => Direction::LEFT,
+            Direction::LEFT => Direction::RIGHT,
+            _ => Direction::NONE,
+        }
+    }
+}
 struct MainGame {
     food: Food,
     snake: Snake,
 }
 impl MainGame {
     fn init() -> GameResult<MainGame> {
-        let food = Food::init(0, 0);
+        let mut food = Food::init();
+        food.set_random();
         let snake = Snake::new();
         Ok(MainGame { food, snake })
     }
 }
 impl event::EventHandler<ggez::GameError> for MainGame {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
-        self.snake.update();
+        while _ctx.time.check_update_time(5) {
+            self.snake.update();
+            //collision logic
+            if self.snake.has_ate_fruit(&self.food) {
+                self.food.set_random();
+            }
+        }
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> Result<(), ggez::GameError> {
@@ -58,10 +74,52 @@ impl event::EventHandler<ggez::GameError> for MainGame {
     fn key_down_event(&mut self, _ctx: &mut Context, input: KeyInput, _repeat: bool) -> GameResult {
         let pressed_key_code = input.keycode.unwrap();
         match pressed_key_code {
-            keyboard::KeyCode::W => self.snake.last_direction = Direction::UP,
-            keyboard::KeyCode::S => self.snake.last_direction = Direction::DOWN,
-            keyboard::KeyCode::D => self.snake.last_direction = Direction::RIGHT,
-            keyboard::KeyCode::A => self.snake.last_direction = Direction::LEFT,
+            keyboard::KeyCode::W => {
+                //conditions rejects if key pressed is same as previous
+                //and also rejects moving to reverse direction to current direction
+                if self.snake.disallowed_direction() != Direction::UP
+                    && self.snake.current_direction != Direction::UP
+                {
+                    self.snake.last_direction = match self.snake.current_direction.clone() {
+                        Direction::NONE => Direction::UP,
+                        item => item,
+                    };
+                    self.snake.current_direction = Direction::UP
+                }
+            }
+            keyboard::KeyCode::S => {
+                if self.snake.disallowed_direction() != Direction::DOWN
+                    && self.snake.current_direction != Direction::DOWN
+                {
+                    self.snake.last_direction = match self.snake.current_direction.clone() {
+                        Direction::NONE => Direction::DOWN,
+                        item => item,
+                    };
+                    self.snake.current_direction = Direction::DOWN
+                }
+            }
+            keyboard::KeyCode::D => {
+                if self.snake.disallowed_direction() != Direction::RIGHT
+                    && self.snake.current_direction != Direction::RIGHT
+                {
+                    self.snake.last_direction = match self.snake.current_direction.clone() {
+                        Direction::NONE => Direction::RIGHT,
+                        item => item,
+                    };
+                    self.snake.current_direction = Direction::RIGHT
+                }
+            }
+            keyboard::KeyCode::A => {
+                if self.snake.disallowed_direction() != Direction::LEFT
+                    && self.snake.current_direction != Direction::LEFT
+                {
+                    self.snake.last_direction = match self.snake.current_direction.clone() {
+                        Direction::NONE => Direction::LEFT,
+                        item => item,
+                    };
+                    self.snake.current_direction = Direction::LEFT
+                }
+            }
             _ => println!("Fuck Sabinonweb"),
         }
 

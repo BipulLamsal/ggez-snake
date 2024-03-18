@@ -3,7 +3,7 @@ use ggez::{
     graphics::{self, Canvas, Color, DrawMode, FillOptions},
     Context,
 };
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Grid {
     x: i32,
     y: i32,
