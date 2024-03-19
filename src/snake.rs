@@ -1,3 +1,4 @@
+use crate::Ate;
 use crate::{food::Food, grid::Grid, Direction, GRID_SIZE, SCREEN_SIZE};
 use ggez::graphics::Color;
 #[derive(Debug)]
@@ -59,12 +60,28 @@ impl Snake {
             prev_segment_position = curret_position;
         }
     }
+
     pub fn has_ate_fruit(&self, food: &Food) -> bool {
         let food_pos = &food.pos;
         if *food_pos == self.head_pos {
             return true;
         }
         false
+    }
+
+    pub fn has_ate(&self, food: &Food) -> Ate {
+        let food_pos = &food.pos;
+        if *food_pos == self.head_pos {
+            return Ate::Food;
+        }
+
+        for segment in &self.body_list {
+            if segment.get_tuple() == self.head_pos.clone().into() {
+                return Ate::Itself;
+            }
+        }
+
+        Ate::Nothing
     }
 
     pub fn disallowed_direction(&self) -> Direction {
