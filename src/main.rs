@@ -7,6 +7,7 @@ use ggez::event::{self};
 use ggez::graphics::{self, Color};
 use ggez::input::keyboard::{self, KeyInput};
 use ggez::{Context, GameResult};
+use grid::Grid;
 use snake::Snake;
 
 pub const DIMENSION_SIZE: (i32, i32) = (20, 20);
@@ -57,6 +58,7 @@ impl event::EventHandler<ggez::GameError> for MainGame {
             //collision logic
             if self.snake.has_ate_fruit(&self.food) {
                 self.food.set_random();
+                self.snake.body_list.push(self.snake.head_pos.clone());
             }
         }
         Ok(())
@@ -68,6 +70,10 @@ impl event::EventHandler<ggez::GameError> for MainGame {
         self.snake
             .head_pos
             .draw_rect(self.snake.head_color, ctx, &mut canvas);
+        let snake_body_iter = self.snake.body_list.clone();
+        for item in snake_body_iter.iter() {
+            item.draw_rect(self.snake.body_color, ctx, &mut canvas);
+        }
 
         canvas.finish(ctx)
     }
