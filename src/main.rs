@@ -66,8 +66,8 @@ impl MainGame {
     fn init() -> GameResult<MainGame> {
         let menu = Menu::init();
         let mut food = Food::init();
-        food.set_random();
         let snake = Snake::new();
+        food.set_random(&snake);
         let score = Score::init();
         Ok(MainGame {
             food,
@@ -79,12 +79,6 @@ impl MainGame {
             screen: Screen::Menu,
         })
     }
-
-    fn adjust_fps(&mut self) {
-        let fps_adjustment = (self.score.value / (SCREEN_SIZE.0 * SCREEN_SIZE.1) as i32 - 1) * 20;
-        let adjusted_fps = self.fps + fps_adjustment as u32;
-        self.fps = adjusted_fps;
-    }
 }
 impl event::EventHandler<ggez::GameError> for MainGame {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
@@ -93,7 +87,7 @@ impl event::EventHandler<ggez::GameError> for MainGame {
             //collision logic
             match self.snake.has_ate(&self.food) {
                 Ate::Food => {
-                    self.food.set_random();
+                    self.food.set_random(&self.snake);
                     self.score.value += 1;
                     let last_position = self.snake.body_list.last().unwrap_or(&self.snake.head_pos);
                     self.snake.body_list.push(last_position.clone());
@@ -112,7 +106,6 @@ impl event::EventHandler<ggez::GameError> for MainGame {
                 Ate::Itself => {
                     self.gameover = true;
                 }
-
                 Ate::Nothing => {}
             }
         }
