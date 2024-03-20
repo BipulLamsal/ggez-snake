@@ -1,8 +1,8 @@
 
 ggez-snake &middot; 🐍
 =====
-Classic snake game just to test if rust is in game yet? [Are we game yet?]("https://arewegameyet.rs/")
-used ggez just to fool around, I checked snake example but couldn't understand and created my own.
+Classic snake game just to test if rust is in game yet? [Are we game yet?](https://arewegameyet.rs/)
+used ggez just to fool around, I checked gegez snake [example](https://github.com/ggez/ggez/blob/master/examples/04_snake.rs) but couldn't understand and created my own.
 Maybe someday, I will implement it on WASM.
 
 ## Demo
