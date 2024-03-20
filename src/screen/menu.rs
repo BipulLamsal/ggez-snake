@@ -47,21 +47,21 @@ impl Menu {
                 w: self.button_length,
                 h: self.button_height,
             },
-            Color::from_rgb(220, 221, 225),
+            Color::from_rgb(53, 59, 72),
         );
 
         let grid = graphics::Mesh::from_data(ctx, binding.build());
         let button = graphics::Mesh::from_data(ctx, button_binding.build());
         let heading_text = Text::new(TextFragment {
             text: "ggez sabinonweb snake".to_string(),
-            color: Some(Color::from_rgb(46, 204, 113)),
+            color: Some(Color::from_rgb(53, 59, 72)),
             font: Some("LiberationMono-Regular".into()),
-            scale: Some(PxScale::from(SCREEN_SIZE.0 / 16.0)),
+            scale: Some(PxScale::from(SCREEN_SIZE.0 / 17.0)),
             ..Default::default()
         });
         let button_text = Text::new(TextFragment {
             text: "start (Press/Enter)".to_string(),
-            color: Some(Color::from_rgb(46, 204, 113)),
+            color: Some(Color::from_rgb(255, 255, 255)),
             font: Some("LiberationMono-Regular".into()),
             scale: Some(PxScale::from(SCREEN_SIZE.0 / 20.0)),
             ..Default::default()

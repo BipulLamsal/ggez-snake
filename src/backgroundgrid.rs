@@ -12,9 +12,9 @@ impl BackgroundgGrid {
             for j in (0..SCREEN_SIZE.1 as i32 + 1).step_by(32) {
                 let grid = Grid::new(i, j);
                 if ((i + j) / GRID_SIZE.0 as i32) % 2 == 0 {
-                    grid.draw_rect(Color::from_rgb(46, 171, 139), ctx, canvas)
+                    grid.draw_rect(Color::from_rgb(170, 215, 81), ctx, canvas)
                 } else {
-                    grid.draw_rect(Color::from_rgb(60, 176, 146), ctx, canvas)
+                    grid.draw_rect(Color::from_rgb(162, 209, 73), ctx, canvas)
                 }
             }
         }

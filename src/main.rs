@@ -220,6 +220,15 @@ impl event::EventHandler<ggez::GameError> for MainGame {
                     self.screen = Screen::Game;
                 }
             }
+            keyboard::KeyCode::R => {
+                if self.screen == Screen::Score {
+                    self.gameover = false;
+                    self.score.value = 0;
+                    self.snake = Snake::new();
+                    self.food.set_random(&self.snake);
+                    self.screen = Screen::Game;
+                }
+            }
             _ => println!("Fuck Sabinonweb"),
         }
         Ok(())

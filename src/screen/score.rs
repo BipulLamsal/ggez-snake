@@ -24,7 +24,9 @@ impl Score {
             Color::from_rgb(245, 246, 250),
         );
 
-        let text_score = "Gameover! Your score is ".to_string() + &self.value.to_string();
+        let text_score = "Gameover! Your score is ".to_string()
+            + &self.value.to_string()
+            + "\n Press R to start again";
         let grid = graphics::Mesh::from_data(ctx, binding.build());
         let heading_text = Text::new(TextFragment {
             text: text_score,

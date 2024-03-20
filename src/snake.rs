@@ -14,7 +14,7 @@ impl Snake {
     pub fn new() -> Snake {
         Snake {
             head_pos: (32, 32).into(),
-            head_color: Color::from_rgb(248, 239, 186),
+            head_color: Color::from_rgb(53, 59, 72),
             body_color: Color::from_rgb(247, 241, 227),
             body_list: Vec::new(),
             last_direction: Direction::NONE,
