@@ -1,5 +1,3 @@
-use core::f32;
-
 use backgroundgrid::BackgroundgGrid;
 use food::Food;
 use ggez::conf::{WindowMode, WindowSetup};
@@ -8,6 +6,7 @@ use ggez::graphics::{self, Color};
 use ggez::input::keyboard::{self, KeyInput};
 use ggez::{Context, GameResult};
 use screen::menu::Menu;
+use screen::score::Score;
 use snake::Snake;
 
 pub const DIMENSION_SIZE: (i32, i32) = (20, 20);
@@ -40,7 +39,6 @@ impl Direction {
         }
     }
 }
-
 enum Ate {
     Itself,
     Food,
@@ -59,7 +57,9 @@ struct MainGame {
     snake: Snake,
     gameover: bool,
     menu: Menu,
+    score: Score,
     screen: Screen,
+    fps: u32,
 }
 
 impl MainGame {
@@ -68,25 +68,46 @@ impl MainGame {
         let mut food = Food::init();
         food.set_random();
         let snake = Snake::new();
+        let score = Score::init();
         Ok(MainGame {
             food,
             snake,
             menu,
+            score,
+            fps: 5,
             gameover: false,
             screen: Screen::Menu,
         })
     }
+
+    fn adjust_fps(&mut self) {
+        let fps_adjustment = (self.score.value / (SCREEN_SIZE.0 * SCREEN_SIZE.1) as i32 - 1) * 20;
+        let adjusted_fps = self.fps + fps_adjustment as u32;
+        self.fps = adjusted_fps;
+    }
 }
 impl event::EventHandler<ggez::GameError> for MainGame {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
-        while _ctx.time.check_update_time(5) {
+        while _ctx.time.check_update_time(self.fps) {
             self.snake.update();
             //collision logic
             match self.snake.has_ate(&self.food) {
                 Ate::Food => {
                     self.food.set_random();
+                    self.score.value += 1;
                     let last_position = self.snake.body_list.last().unwrap_or(&self.snake.head_pos);
                     self.snake.body_list.push(last_position.clone());
+                    let fps_value = Some(self.fps + (self.score.value * 1 / 10) as u32);
+                    self.fps = match fps_value {
+                        Some(item) => {
+                            if item >= 15 {
+                                15
+                            } else {
+                                item
+                            }
+                        }
+                        None => 5,
+                    }
                 }
                 Ate::Itself => {
                     self.gameover = true;
@@ -95,9 +116,9 @@ impl event::EventHandler<ggez::GameError> for MainGame {
                 Ate::Nothing => {}
             }
         }
-
         Ok(())
     }
+
     fn draw(&mut self, ctx: &mut Context) -> Result<(), ggez::GameError> {
         let mut canvas = graphics::Canvas::from_frame(ctx, Color::WHITE);
         BackgroundgGrid::draw(ctx, &mut canvas);
@@ -114,12 +135,18 @@ impl event::EventHandler<ggez::GameError> for MainGame {
                         item.draw_rect(self.snake.body_color, ctx, &mut canvas);
                     }
                 }
+                if self.gameover {
+                    self.screen = Screen::Score;
+                }
             }
-            _ => {}
+            Screen::Score => {
+                self.score.draw_screen(ctx, &mut canvas);
+            }
         }
 
         canvas.finish(ctx)
     }
+
     fn mouse_button_down_event(
         &mut self,
         _ctx: &mut Context,
@@ -202,7 +229,6 @@ impl event::EventHandler<ggez::GameError> for MainGame {
             }
             _ => println!("Fuck Sabinonweb"),
         }
-
         Ok(())
     }
 }

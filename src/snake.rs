@@ -14,8 +14,8 @@ impl Snake {
     pub fn new() -> Snake {
         Snake {
             head_pos: (32, 32).into(),
-            head_color: Color::from_rgb(9, 132, 227),
-            body_color: Color::from_rgb(116, 185, 255),
+            head_color: Color::from_rgb(248, 239, 186),
+            body_color: Color::from_rgb(247, 241, 227),
             body_list: Vec::new(),
             last_direction: Direction::NONE,
             current_direction: Direction::NONE,
@@ -59,14 +59,6 @@ impl Snake {
             segment.modify(prev_segment_position.0, prev_segment_position.1);
             prev_segment_position = curret_position;
         }
-    }
-
-    pub fn has_ate_fruit(&self, food: &Food) -> bool {
-        let food_pos = &food.pos;
-        if *food_pos == self.head_pos {
-            return true;
-        }
-        false
     }
 
     pub fn has_ate(&self, food: &Food) -> Ate {
